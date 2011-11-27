@@ -66,6 +66,10 @@ for my $size (1..50) {
     }
 
     my $reply = [ map { $_->[1] } reverse @IN ];
+
+    ok  length ($buf) == 0,    'parsed entire buffer'
+        or
+            diag $buf;
    
     is_deeply  $out, $reply,   'reply'
         or 
