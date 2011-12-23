@@ -139,7 +139,9 @@ parse_redis (buf, res)
                                     }
 
                                     if ( *p == 10  &&  *(p - 1) == 13 ) { 
-                                        
+
+                                      if ( *(mark2) == '$' ) {
+
                                         if ( isDIGIT (*(mark2 + 1)) ) {
 
                                             if ( end - p - 1  < len + 2 ) {
@@ -148,6 +150,7 @@ parse_redis (buf, res)
                                             }
 
                                             p += len + 2;
+                                            goto cont;
 
                                         } else if ( *(mark2 + 1) == '-') {
 
@@ -158,7 +161,16 @@ parse_redis (buf, res)
                                             goto eof; 
                                         }
 
+                                      } else if ( *(mark2) == '+' ||
+                                                  *(mark2) == '-' ||
+                                                  *(mark2) == ':'    ) {
+
                                         goto cont;
+
+                                      } else {
+
+                                        XSRETURN_UNDEF;
+                                      }
                                     }
                                 }
 
@@ -195,7 +207,9 @@ parse_redis (buf, res)
                                     }
 
                                     if ( *p == 10  &&  *(p - 1) == 13 ) { 
-                                        
+                                      
+                                      if ( *(mark2) == '$' ) {  
+
                                         if ( isDIGIT (*(mark2 + 1)) ) {
  
                                             av_push ( av, 
@@ -211,6 +225,27 @@ parse_redis (buf, res)
                                         }
 
                                         break;
+
+                                      } else if ( *(mark2) == '+' ||
+                                                  *(mark2) == '-' ||
+                                                  *(mark2) == ':'    ) {
+                                        AV *avtmp;
+                                        
+                                        avtmp = newAV ();
+                                        av_push (avtmp, 
+                                            newSVpvn (mark2, 1));
+                                        av_push (avtmp, 
+                                            newSVpvn (mark2 + 1, 
+                                                (p - mark2 - 2)));
+                                        av_push (av, 
+                                            newRV_noinc ((SV *) avtmp));
+
+                                        break;
+
+                                      } else {
+
+                                        XSRETURN_UNDEF; /* never happens */
+                                      }
                                     }
                                 }
                             }

@@ -10,7 +10,7 @@ our @EXPORT  = qw(
     parse_redis
 );
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 require XSLoader;
 XSLoader::load('Redis::Parser::XS', $VERSION);
@@ -96,9 +96,10 @@ Parsed messages added to the C<@output> in the following format:
                                        #
         ['*', undef                ],  # *-1     CRLF
                                        #
-        ['*', ['foo', ... ]        ],  # *2      CRLF 
-                                       # $3      CRLF
-                                       # foo     CRLF
+        ['*', [ 'foo',                 # *2      CRLF 
+                ['+', 'OK'],           # $3      CRLF
+                 ...         ]         # foo     CRLF
+                                       # +OK     CRLF
                                        # ...
                                        #
         ['*', ['foo', undef ]      ],  # *2      CRLF 

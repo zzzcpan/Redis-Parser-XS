@@ -39,6 +39,25 @@ my @IN = (
       "\$-1"       . $CRLF .
       "\$4"        . $CRLF .
       "fooo"       . $CRLF  => [ '*', ['bar', undef, 'fooo'] ] ], 
+
+    [ "*4"         . $CRLF .
+      "\$3"        . $CRLF .
+      "bar"        . $CRLF .
+      ":123"       . $CRLF .
+      "\$-1"       . $CRLF .
+      "\$4"        . $CRLF .
+      "fooo"       . $CRLF  => [ '*', ['bar', [':', '123'], undef, 'fooo'] ] ], 
+
+    [ "*5"         . $CRLF .
+      "\$3"        . $CRLF .
+      "bar"        . $CRLF .
+      "-ERR"       . $CRLF .
+      "+OK"        . $CRLF .
+      "\$-1"       . $CRLF .
+      "\$4"        . $CRLF .
+      "fooo"       . $CRLF  => [ '*', ['bar', ['-', 'ERR'], ['+', 'OK'], 
+                                undef, 'fooo'] ] ], 
+
 );
 
 
@@ -50,7 +69,8 @@ foreach (@IN) {
     is         $len, length ($buf),     'length';
     is_deeply  $out, [ $reply ],        'reply'
         or 
-            diag Dumper ($out->[0], $reply);
+            diag Dumper ($out->[0], $reply), 
+                BAIL_OUT('');
 }
 
 {
@@ -63,7 +83,8 @@ foreach (@IN) {
     is         $len, length ($buf),     'length';
     is_deeply  $out, $reply,            'reply'
         or 
-            diag Dumper ($out, $reply);
+            diag Dumper ($out, $reply),
+                BAIL_OUT('');
 }
 
 {
@@ -76,7 +97,8 @@ foreach (@IN) {
     is         $len, length ($buf),     'length';
     is_deeply  $out, $reply,            'reply'
         or 
-            diag Dumper ($out, $reply);
+            diag Dumper ($out, $reply),
+                BAIL_OUT('');
 }
 
 
@@ -91,7 +113,8 @@ foreach (@IN) {
 
         ok  $len == 0,   'incompleteness'
             or 
-                diag Dumper ($_, length($_->[0]), $i, $buf, $out);
+                diag Dumper ($_, length($_->[0]), $i, $buf, $out),
+                    BAIL_OUT('');
     }
 }
 
